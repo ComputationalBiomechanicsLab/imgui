@@ -91,6 +91,16 @@
         operator MyVec4() const { return MyVec4(x,y,z,w); }
 */
 
+#include "glm/vec4.hpp"
+#define IM_VEC4_CLASS_EXTRA                                                 \
+        ImVec4(const glm::vec4& v) { x = v.x; y = v.y; z = v.z; w = v.w; }  \
+        operator glm::vec4() const { return glm::vec4(x, y, z, w); }
+
+#include "glm/vec2.hpp"
+#define IM_VEC2_CLASS_EXTRA                                                 \
+         ImVec2(const glm::vec2& f) { x = f.x; y = f.y; }                   \
+         operator glm::vec2() const { return glm::vec2(x,y); }
+
 //---- Use 32-bit vertex indices (default is 16-bit) is one way to allow large meshes with more than 64K vertices.
 // Your renderer backend will need to support it (most example renderer backends support both 16/32-bit indices).
 // Another way to allow large meshes while keeping 16-bit indices is to handle ImDrawCmd::VtxOffset in your renderer.
