@@ -687,7 +687,17 @@ void ImGui_ImplSDL2_NewFrame()
     // Setup time step (we don't use SDL_GetTicks() because it is using millisecond resolution)
     static Uint64 frequency = SDL_GetPerformanceFrequency();
     Uint64 current_time = SDL_GetPerformanceCounter();
-    IM_ASSERT(current_time > bd->Time && "this is very very bad - the VM's performance clocks don't monotonically increase?");
+
+    // Hotfix: SDL_GetPerformanceCounter didn't monotonically increase, which would yield a
+    //         DeltaTime of zero (disallowed by ImGui), so we "fake" the time this frame.
+    //
+    // This bizzare edge-case bug seems to happen when using the SDL backend in a VirtualBox
+    // VM running Ubuntu22 (Mesa renderer)
+    if (current_time <= bd->Time)
+    {
+        current_time = bd->Time + 1;
+    }
+
     io.DeltaTime = bd->Time > 0 ? (float)((double)(current_time - bd->Time) / frequency) : (float)(1.0f / 60.0f);
     bd->Time = current_time;
 
